@@ -1,9 +1,14 @@
 Mysticeti: design decisions & latest architecture
 
 Objective: Have a single simple DAG based broadcast structure, allowing validators to:
-(1) share transactions once, and disseminate them to all, (2) share votes on transactions 
-as part of a consistent broadcast based protocol, once per node (3) share potential 
-conflicting transactions and (4) allow agreement on consecutive commit sets of transactions.
+
+- (1) share transactions once, and disseminate them to all, 
+- (2) share votes on transactions 
+as part of a consistent broadcast based protocol, once per node 
+- (3) share potential 
+conflicting transactions and 
+- (4) allow agreement on consecutive commit sets of transactions.
+
 Thus the design combines and integrates the Sui fast path & the narwhal-based consensus path
 in Sui.
 
@@ -37,7 +42,7 @@ validators are given the certificate in Sui. A model by which one validator is r
 putting a transaction into the system, with a very short delay to observe correct inclusion is 
 simpler and better.
 
-The DAG creation and invariants:
+## The DAG creation and invariants:
 
 A mysticeti block contains:
 - A creator authority, a round number and a digest (acts as a reference for the block)
@@ -53,7 +58,7 @@ The authority is known and the signature valid over all data in the block. A cor
 block should contain votes only on transactions included previously in this block, or 
 any included blocks (transitivelly). 
 
-DAG processing: Certification
+## DAG processing: Certification
 
 As a node receives blocks it processesed them in causal order ensuring included references
 are processed before each block referring to them. A the base statements of each block are 
@@ -62,7 +67,7 @@ positive votes are seen the transaction is considered certififed; A correct node
 reject a transaction with an optional conflicting transaction. Correct nodes never change 
 their votes (between accept and conflict).
 
-As blocks are processed by a validator are included in the next block of the validator as
+As blocks are processed by a validator they are included in the next block of the validator as
 references. Any transactions or votes presented by the validator are also included in the 
 next block as base statements. A process of reference compression allows a validator to only
 include the causally latest reference allowing others to infer previous ones. 
@@ -73,9 +78,9 @@ that it may not accept. Then for all certified transactions it continues to run 
 protocol until they are sequenced, or until >2/3 close epoch transactions are seen. When all
 transactions certified locally are sequenced it sends its end-of-epoch transaction.
 
-DAG processing: Consensus
+## DAG processing: Consensus
 
-We determine a period, ie every how many rounds we elect a leader ( so if period is 3, we elect
+We determine a period, ie every period many rounds we elect a leader ( so if period is 3, we elect
 at rounds 0, 3, 6, ...). We consider that a block "votes" for another block if the other 
 block is included in its history. Only the first block from an (authority, round) included
 direcly or indirecly is "voted" for. When a block votes for a past block we consider the 
@@ -90,7 +95,7 @@ When a leader at round k is committed, we consider all leaders between the last 
 and the leader at k. If the leader k' < k is certified by at least one block in its decision round 
 within the causal history of k, we commit it first, and then consider the next one.
 
-From commits to executions:
+## From commits to executions:
 
 As soon as a transaction is certified, and only contains owned objects, it may be executed by the 
 validator. The validator then includes in its block sufficient evidence to ensure all will eventually 
@@ -105,7 +110,7 @@ are executed and sequenced in a causal order. However, a validator may vote to r
 some time, to allow for the epoch to close. 
 
 
-Sync & Net protocol: 
+## Sync & Net protocol: 
 
 All communications
 are done as a request / response (there is no push as in Sui/NW) and we try to unify the 
@@ -116,7 +121,7 @@ on a need by need basis that is included in a block from the party that created 
 We follow a 2-level sync protocol. Each commit of the consensus makes a commit
 set of blocks, and we can request to sync up to a commit set by round number. Commit 
 sets are shared between validators so one can request them from others. For the very latest 
-blocks we maintain a sussinct structure of blocks not in a commit set, and exchange it to 
+blocks we maintain succinct structure of blocks not in a commit set, and exchange it to 
 allow another node to send the missing blocks, or request more blocks. 
 
 TODO Things we need to co-design:
@@ -128,44 +133,46 @@ TODO Things we need to co-design:
 - crash recovery
 - batch async client api to interact with system
 
-Key APIs:
+## Key APIs:
 
-Core-Mysticeti API
+### Core-Mysticeti API
 
 This is the interface that the validator code uses to "talk to" the mysticeti logic that runs 
 on the validator.
 
-- BroadcastTransaction(transactions: Vec<Transactions>) : put a number of transactions into the 
+- `BroadcastTransaction(transactions: Vec<Transactions>)` : put a number of transactions into the 
   broadcast channel, so that other validators can vote on them. A validator should only place a
   transaction in the channel if it is ready to vote for it positivelly.
-- BroadcastVotes(votes: Vec<(TransactionId, Votes)>) : place a number of positive or negative 
+- `BroadcastVotes(votes: Vec<(TransactionId, Votes)>)` : place a number of positive or negative 
   votes from itself associated with specific transactions into the broadcast channel. Other 
   validators will receive the votes and tally them to make certificates.
-- ProcessBlocks( blocks: Vec<MysticetiBlocks>) : the core asks mysticeti to process a number 
+- `ProcessBlocks( blocks: Vec<MysticetiBlocks>)` : the core asks mysticeti to process a number 
   of blocks from other validators.
-- Shutdown : asks the mysticeti logic to close the channel, after it has sent or sequenced all
+- `Shutdown` : asks the mysticeti logic to close the channel, after it has sent or sequenced all
   data it has committed to send or sequence.
 
-Read APIs allow the core to determine:
+### Read APIs 
+
+allow the core to determine:
 - Blocks missing.
 - Transactions received requiring votes
 - Transactions that have been certified.
 - Blocks committed and commit sets of transactions.
 
-Validator-Validator API
+### Validator-Validator API
 
 This is the networked interface that mysticeti logic on a validator uses to "talk to" the 
 mysticeti logic on a different validator. It all takes the form of RPC request / response, but
 some responses are streamed and use a long poll. 
 
-- Subscribe at round number: request a validator at a round number, and the Validator
+- **Subscribe at round number**: request a validator at a round number, and the Validator
   will send its own blocks after that round number, for a specified number of blocks.
-- Subscribe by hash: requrest a blocks from a validator using a set of hashes. These blocks 
+- **Subscribe by hash**: request a blocks from a validator using a set of hashes. These blocks 
   may be created by others but the validator has included them.
-- Get commit blocks by round number: request all blocks between two committed rounds, by 
+- **Get commit blocks by round number**: request all blocks between two committed rounds, by 
   round numbers for start and end.
 
-Note that there are not push APIs. All APIs are unreliable, in that they may fail 
+Note that there are **no push APIs**. All APIs are unreliable, in that they may fail 
 without internal re-transmission. The reliability of the protocol is not based on a
 per message reliable transmission, but rather on a repetition of the overall protocol
 loop.

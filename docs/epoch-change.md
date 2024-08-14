@@ -1,7 +1,8 @@
-Owned-object-only transaction:
+### Owned-object-only transaction:
+
 A block B is said to certify a transaction tx if the causal history of B
 contains 2f+1 votes for tx. However, the block carries an overriding bit,
-called epoch-change-bit, which when set to 1 (default set to 0), indicates that
+called **epoch-change-bit**, which when set to 1 (default set to 0), indicates that
 the block does not certify any transaction, regardless of the causal history.
 A validator can execute the transaction (asynchronously) as soon
 as it sees 2f+1 votes for it.
@@ -9,7 +10,7 @@ as it sees 2f+1 votes for it.
 A transaction is considered final if in any view of the DAG, 2f+1 authorities
 have published blocks which certify the transaction.
 
-Epoch Change
+### Epoch Change
 1. Epoch Change begins at a pre-determined commit, for example, when enough
 ready messages from the new committee are sequenced.
 2. Validator stops acquiring locks and casting votes. The epoch-change-bit in
@@ -21,12 +22,12 @@ sequenced, epoch is considered closed.
 4. Any continuing validators reset their object locks, and revert execution of
 transactions for which no certifying block has been committed.
 
-Safety:
+### Safety:
 Finalised transactions are never reverted.
 - All owned-object-only transactions have at least one certificate sequenced
 before the epoch close.
 
-Proof.
+**Proof.**
 It is sufficient to prove that all owned-object-only transactions
 that are considered final (i.e. having certifying blocks from 2f+1 authorities)
 have one certifying block sequenced in the current epoch.
@@ -44,13 +45,13 @@ epoch-change-bit set to 1, B1 is necessarily published in an earlier round than
 that of B2. B1 is therefore contained in the causal history of B2, which is a
 contradiction.
 
-Liveness:
+### Liveness:
 Epoch change process terminates for all correct validators eventually.
 
-Proof.
-Inherited from liveness of underlying BA.
+**Proof.**
+Inherited from liveness of underlying BA (Byzantine Agreement).
 
-When does a validator shut down sync?
+### When does a validator shut down sync?
 A correct validator should not shut down sync as soon as it considers the epoch
 closed. We instead wait for f+1 validators to have considered the epoch closed,
 and then stop the sync.

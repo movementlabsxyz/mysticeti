@@ -1,4 +1,4 @@
-The proof of safety and liveness for Mysticeti Consensus
+## The proof of safety and liveness for Mysticeti Consensus
 
 Brief description of scheme:
 - Validators have stake that is stable throughout the epoch.
@@ -9,7 +9,7 @@ Brief description of scheme:
 - A block contains an ordered list of references to previous blocks, 
   and none to current or future round blocks. We call these blocks "included".
 - A block contains at least a quorum of references to blocks
-  from the previoud round.
+  from the previous round.
 - A correct block starts with a reference to the previous block from the
   creator validator.
 - The system is initialized with blocks for round 0 from all 
@@ -17,7 +17,7 @@ Brief description of scheme:
 - A block also contains contents, which are playloads to be sequenced, 
   but otherwise play no role in the agreement protocol.
 
-Definition of block support
+### Definition of block support
 
 A block A is supported by another (causally future) block B if A is the first 
 block from the (validator, round) of A that is in the causal history of B. The
@@ -31,12 +31,15 @@ earlier supported block, the earlier remains supported and the later ignored. Th
 implements a depth first, right-to-left in includes, support collection.
 
 As a result two lemmas hold:
+
 Lemma 1. A block only supports a single block from a given (authority, round).
+
 Lemma 2. A correct node will only ever support in any of its blocks at most a single
  (authority, round) block.
+
 Lemma 3. Only a single block at a (val, round) will ever gather a quorum of support.
 
-Proofs:
+**Proofs:**
 
 Lemma 1: 
 By the definition of support for a block only a single (val, round) block can be
@@ -56,7 +59,7 @@ gather support, they intersect at at least one correct node. This means that the
 correct node in one block supports A and in another block support A', which by 
 Lemma 2 means A = A'.
 
-Block Certified Support
+### Block Certified Support
 
 A block B certifies a casually included block A if the subgraph connecting A to B
 contains 2f+1 blocks from distinct authorities that support A. Note that in this
@@ -74,7 +77,7 @@ Lemma 5:
 if a block B certifies a block A, any block C that includes B will
 also certify A.
 
-Proofs: 
+**Proofs:**
 
 Lemma 4: A block can certify at most one (authority, round) block (Lemma 1).
 Therefore, consider two blocks that certify different blocks for the same
@@ -86,7 +89,7 @@ and therefore there is a contradiction that proves the lemma.
 Lemma 5: The block C contains the full history of block B, which contains 
 2f+1 support for block A, and therefore block C also certifies block A.
 
-Period, Leader rounds & Decision rounds
+### Period, Leader rounds & Decision rounds
 
 The period (p > 1) is the number of rounds between leaders. Rounds with leaders are 
 p * k (for k = 1, 2, 3, ...)  ie non-zero rounds divisible by the period. During these 
@@ -109,11 +112,11 @@ is committed.
 
 Lemma 6a: 
 If at round x, 2f+1 blocks from distinct authorities certify a block A at a previous round
-then any block in the next round will contain at least 1 block that certifies A at round x.
+then **any block in the next round will contain at least 1 block that certifies A at round x.**
 
 Lemma 6b:
 If at a round x, 2f+1 blocks from distinct authorities certify a block A at a previous
-round, then all blocks at future rounds > x will certify that block.
+round, then **all blocks at future rounds > x will certify that block**.
 
 Lemma 7: 
 If some correct node commits a leader at round k, then all correct nodes will commit the
@@ -130,7 +133,7 @@ Lemma 10:
 The full causal history of the final block to be committed will be included in the
 commit.
 
-Proofs:
+**Proofs:**
 
 Lemma 6a: 
 A block at round x+1 needs to link to 2f+1 blocks at round x. By quorum intersection
