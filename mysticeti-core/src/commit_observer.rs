@@ -197,6 +197,7 @@ impl<H: ProcessedTransactionHandler<TransactionLocator> + Send + Sync> CommitObs
     }
 }
 
+//  COMMENT     observe commit events within the consensus system
 pub struct SimpleCommitObserver {
     #[allow(dead_code)] // will be used later during replay
     block_store: BlockStore,
