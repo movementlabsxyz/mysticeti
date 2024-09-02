@@ -1,5 +1,4 @@
 # start the nix shell and start vscode in it
-# nix flake init
 # nix develop
 # code .
 
@@ -15,16 +14,16 @@
   outputs = { self, nixpkgs, rust-overlay, flake-utils }:
     flake-utils.lib.eachSystem [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ] (system:
       let
-        pkgs = import nixpkgs { inherit system; overlays = [ rust-overlay.overlay ]; };
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ (import rust-overlay) ];
+        };
         rustToolchain = pkgs.rust-bin.stable.latest.default;
-        rustPlatform = pkgs.makeRustPlatform { rustc = rustToolchain; cargo = rustToolchain; };
       in
       {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
             rustToolchain
-            rustPlatform.rustc
-            rustPlatform.cargo
             openssl
             pkg-config
             clang
