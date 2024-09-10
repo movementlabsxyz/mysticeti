@@ -7,11 +7,14 @@ The code in this branch is a prototype of Mysticeti. It supplements the paper [M
 
 ## Development
 
-When developing, the analyzer may show errors in files. To fix this start code in a nix environment. 
+When developing, the analyzer may show errors in files (e.g. in `orchestrator/src/main.rs`). To fix this start code in a nix environment. 
 
     nix develop
     code .
 
+## Run
+
+For detailed instructions on how to run the project, please refer to the [orchestrator README](orchestrator/README.md).
 
 ## License
 
