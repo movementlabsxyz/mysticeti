@@ -23,3 +23,4 @@ async-trait = "0.1.61"
 [profile.release]
 panic = "abort"
 debug = 1
+

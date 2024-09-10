@@ -27,6 +27,9 @@
             openssl
             pkg-config
             clang
+          ] ++ lib.optionals (pkgs.stdenv.isDarwin) [
+            pkgs.darwin.apple_sdk.frameworks.Security  # Include the Security framework for macOS
+            pkgs.darwin.apple_sdk.frameworks.CoreFoundation  # Include CoreFoundation if needed
           ];
 
           shellHook = ''
