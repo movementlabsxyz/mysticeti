@@ -12,6 +12,9 @@ When developing, the analyzer may show errors in files (e.g. in `orchestrator/sr
     nix develop
     code .
 
+## Run
+
+For detailed instructions on how to run the project, please refer to the [orchestrator README](orchestrator/README.md).
 
 ## License
 
