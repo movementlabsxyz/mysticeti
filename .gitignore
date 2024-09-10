@@ -7,3 +7,5 @@ dryrun-*
 local-testbed*
 *.log.ansi
 results/
+
+flake.lock
