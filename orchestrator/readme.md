@@ -79,11 +79,10 @@ To discover the options use
 cargo run --bin orchestrator -- testbed deploy --help
 ```
 
-
-The `orchestrator` binary provides various functionalities for creating, starting, stopping, and destroying instances. You can use the following command to boot 2 instances per region (if the settings file specifies 10 regions, as shown in the example above, a total of 20 instances will be created):
+or 
 
 ```bash
-cargo run --bin orchestrator -- testbed deploy --instances 2
+cargo run --bin orchestrator -h
 ```
 
 To check the current status of the testbed instances, use the following command:
@@ -93,6 +92,14 @@ cargo run --bin orchestrator testbed status
 ```
 
 Instances listed with a green number are available and ready for use, while instances listed with a red number are stopped.
+
+
+The `orchestrator` binary provides various functionalities for creating, starting, stopping, and destroying instances. You can use the following command to boot 2 instances per region (if the settings file specifies 10 regions, as shown in the example above, a total of 20 instances will be created):
+
+```bash
+cargo run --bin orchestrator -- testbed deploy --instances 3
+```
+
 
 To stop (but keep the instances)
 
@@ -112,7 +119,7 @@ cargo run --bin orchestrator -- testbed destroy
 Running benchmarks involves installing the specified version of the codebase on the remote machines and running one validator and one load generator per instance. For example, the following command benchmarks a committee of 10 validators under a constant load of 200 tx/s for 3 minutes:
 
 ```bash
-cargo run --bin orchestrator -- benchmark --committee 10 fixed-load --loads 200 --duration 180
+cargo run --bin orchestrator -- benchmark --committee 5 fixed-load --loads 200 --duration 180
 ```
 
 In a network of 10 validators, each with a corresponding load generator, each load generator submits a fixed load of 20 tx/s. Performance measurements are collected by regularly scraping the Prometheus metrics exposed by the load generators. The `orchestrator` binary provides additional commands to run a specific number of load generators on separate machines.
@@ -120,3 +127,14 @@ In a network of 10 validators, each with a corresponding load generator, each lo
 ### Step 4.a. Monitoring
 
 The orchestrator provides facilities to monitor metrics on clients and nodes. When run with the flab `--monitoring`, the orchestrator deploys a [Prometheus](https://prometheus.io) instance and a [Grafana](https://grafana.com) instance on a dedicated remote machine. Grafana is then available on the address printed on stdout (e.g., `http://3.83.97.12:3000`) with the default username and password both set to `admin`. You can either create a [new dashboard](https://grafana.com/docs/grafana/latest/getting-started/build-first-dashboard/) or [import](https://grafana.com/docs/grafana/latest/dashboards/manage-dashboards/#import-a-dashboard) the example dashboard located in the `./assets` folder.
+
+```bash
+cargo run --bin orchestrator -- benchmark --committee 5 fixed-load --loads 200 --duration 180 --monitoring
+```
+
+### Step 4.b Logging
+
+
+```bash
+cargo run --bin orchestrator -- benchmark --committee 5 fixed-load --loads 200 --duration 180 --monitoring --log-processing
+```
