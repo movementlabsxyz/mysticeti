@@ -62,6 +62,7 @@ pub struct BenchmarkFastPathBlockHandler {
     consensus_only: bool,
 }
 
+// COMMENT  Here the Block limitations are defined 
 // BenchmarkFastPathBlockHandler can push up to 2x of SOFT_MAX_PROPOSED_PER_BLOCK into block
 // So the value here should be chosen so that 2*SOFT_MAX_PROPOSED_PER_BLOCK*TRANSACTION_SIZE
 // is lower then the maximum allowed block size in the system
@@ -80,6 +81,7 @@ impl BenchmarkFastPathBlockHandler {
         transaction_time: TransactionTimeMap,
     ) -> (Self, mpsc::Sender<Vec<Transaction>>) {
         let (sender, receiver) = mpsc::channel(1024);
+        // COMMENT  Here the transaction log is written
         let transaction_log = TransactionLog::start(config.certified_transactions_log())
             .expect("Failed to open certified transaction log for write");
 

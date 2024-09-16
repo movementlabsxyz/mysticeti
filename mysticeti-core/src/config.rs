@@ -236,11 +236,14 @@ impl PrivateConfig {
 
 impl Print for PrivateConfig {}
 
+// COMMENT    StorageDir is a wrapper around a path to a directory where the validator stores its data.
 impl StorageDir {
+    // COMMENT    for BenchmarkFastPathBlockHandler
     pub fn certified_transactions_log(&self) -> PathBuf {
         self.path.join("certified.txt")
     }
 
+    // COMMENT    for validator
     pub fn committed_transactions_log(&self) -> PathBuf {
         self.path.join("committed.txt")
     }

@@ -64,6 +64,7 @@ impl CommittedSubDag {
         CommittedSubDag::new(*leader_block_ref, blocks, timestamp_ms, commit_data.height)
     }
 
+    // COMMENT    The current implementation uses key, which is not ideal. We can also let the anchor decide on the order.
     /// Sort the blocks of the sub-dag by round number. Any deterministic algorithm works.
     pub fn sort(&mut self) {
         self.blocks.sort_by_key(|x| x.round());
